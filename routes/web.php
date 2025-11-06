@@ -40,6 +40,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/documents/{document}/download', [App\Http\Controllers\Admin\DocumentController::class, 'download'])->name('documents.download');
     Route::get('/documents/{document}/view', [App\Http\Controllers\Admin\DocumentController::class, 'view'])->name('documents.view');
 
+    // Signed Document Management
+    Route::delete('/signed-documents/{signedDocument}', [App\Http\Controllers\Admin\SignedDocumentController::class, 'destroy'])->name('signed-documents.destroy');
+
     // Signature Management
     Route::resource('signatures', App\Http\Controllers\Admin\SignatureController::class)->only(['index', 'show', 'destroy']);
     Route::post('/signatures/{signature}/toggle-status', [App\Http\Controllers\Admin\SignatureController::class, 'toggleStatus'])->name('signatures.toggle-status');
@@ -76,6 +79,9 @@ Route::prefix('customer')->name('customer.')->middleware(['auth', 'customer'])->
     Route::get('/documents/{document}/sign', [App\Http\Controllers\Customer\DocumentSigningController::class, 'sign'])->name('documents.sign');
     Route::get('/signing/signatures', [App\Http\Controllers\Customer\DocumentSigningController::class, 'getSignatures'])->name('signing.signatures');
     Route::post('/documents/{document}/sign', [App\Http\Controllers\Customer\DocumentSigningController::class, 'store'])->name('documents.sign.store');
+
+    // Signed Document Management
+    Route::delete('/signed-documents/{signedDocument}', [App\Http\Controllers\Customer\SignedDocumentController::class, 'destroy'])->name('signed-documents.destroy');
 
     // Signature Management
     Route::resource('signatures', App\Http\Controllers\Customer\SignatureController::class);

@@ -79,16 +79,28 @@
                                                         </td>
                                                         <td>{{ $signedDoc->created_at->format('M d, Y H:i:s') }}</td>
                                                         <td>
-                                                            @php
-                                                                $media = $signedDoc->getFirstMedia('signed_pdf');
-                                                            @endphp
-                                                            @if ($media)
-                                                                <a href="{{ $media->getUrl() }}"
-                                                                    class="btn btn-sm btn-success"
-                                                                    download="{{ $signedDoc->label }}.pdf">
-                                                                    <i class='bx bx-download'></i> Download
-                                                                </a>
-                                                            @endif
+                                                            <div class="d-flex gap-2">
+                                                                @php
+                                                                    $media = $signedDoc->getFirstMedia('signed_pdf');
+                                                                @endphp
+                                                                @if ($media)
+                                                                    <a href="{{ $media->getUrl() }}"
+                                                                        class="btn btn-sm btn-success"
+                                                                        download="{{ $signedDoc->label }}.pdf">
+                                                                        <i class='bx bx-download'></i> Download
+                                                                    </a>
+                                                                @endif
+                                                                <form
+                                                                    action="{{ route('customer.signed-documents.destroy', $signedDoc) }}"
+                                                                    method="POST"
+                                                                    onsubmit="return confirm('Are you sure you want to delete this signed document? This action cannot be undone.');">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                                        <i class='bx bx-trash'></i> Delete
+                                                                    </button>
+                                                                </form>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 @endforeach
