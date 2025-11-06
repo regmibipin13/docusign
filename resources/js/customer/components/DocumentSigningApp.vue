@@ -38,40 +38,51 @@
 
             <!-- Main Area - Document Canvas -->
             <div class="col-md-9">
+                <!-- Instructions at Top -->
+                <div class="alert alert-info mb-3">
+                    <div class="d-flex align-items-start">
+                        <i class='bx bx-info-circle me-2' style="font-size: 1.5rem;"></i>
+                        <div>
+                            <strong>How to Sign:</strong>
+                            <ol class="mb-0 mt-2 ps-3">
+                                <li>Drag and drop your signature(s) from the left panel onto the document</li>
+                                <li>You can resize, rotate, and position signatures as needed</li>
+                                <li>The same signature can be placed multiple times on different pages</li>
+                                <li>Enter a descriptive label for your signed document</li>
+                                <li>Click "Save Signed Document" when done</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card mb-3">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">
-                                <i class='bx bx-file-pdf'></i> {{ documentName }}
-                                <span v-if="placedSignatures.length > 0" class="badge bg-primary ms-2">
-                                    {{ placedSignatures.length }} signature{{ placedSignatures.length !== 1 ? 's' : ''
-                                    }} placed
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="card-title mb-0">
+                            <i class='bx bx-file-pdf'></i> {{ documentName }}
+                            <span v-if="placedSignatures.length > 0" class="badge bg-primary text-white ms-2">
+                                {{ placedSignatures.length }} signature{{ placedSignatures.length !== 1 ? 's' : ''
+                                }} placed
+                            </span>
+                        </h5>
+                        <div class="d-flex gap-2">
+                            <button @click="saveSignedDocument" :disabled="placedSignatures.length === 0 || saving"
+                                class="btn btn-success">
+                                <i class='bx bx-save'></i>
+                                <span v-if="!saving">Save Signed Document</span>
+                                <span v-else>
+                                    <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                                    Saving...
                                 </span>
-                            </h5>
-                            <div class="btn-group">
-                                <button @click="saveSignedDocument" :disabled="placedSignatures.length === 0 || saving"
-                                    class="btn btn-success">
-                                    <i class='bx bx-save'></i>
-                                    <span v-if="!saving">Save Signed Document</span>
-                                    <span v-else>Saving...</span>
-                                </button>
-                                <a :href="cancelUrl" class="btn btn-secondary">
-                                    <i class='bx bx-x'></i> Cancel
-                                </a>
-                            </div>
+                            </button>
+                            <a :href="cancelUrl" class="btn btn-secondary">
+                                <i class='bx bx-x'></i> Cancel
+                            </a>
                         </div>
                     </div>
                     <div class="card-body">
-                        <div v-if="placedSignatures.length === 0" class="alert alert-info">
-                            <i class='bx bx-info-circle'></i>
-                            <span v-if="!allPagesReady">Please wait for the document to finish loading...</span>
-                            <span v-else>Drag and drop signatures from the left panel onto the document. You can resize,
-                                rotate, and position them as needed.</span>
-                        </div>
-
                         <!-- Label Input Field -->
                         <div v-if="placedSignatures.length > 0" class="mb-3">
-                            <label for="documentLabel" class="form-label">
+                            <label for="documentLabel" class="form-label fw-bold">
                                 <i class='bx bx-label'></i> Label for Signed Document *
                             </label>
                             <input type="text" id="documentLabel" v-model="documentLabel" class="form-control"
