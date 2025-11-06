@@ -1,0 +1,138 @@
+// Custom Customer Styles
+
+// Page customization
+.page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-body {
+    flex: 1;
+}
+
+// Card customization
+.card {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(101, 109, 119, 0.16);
+    transition: box-shadow 0.3s ease;
+
+    &:hover {
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+    }
+}
+
+// Avatar customization
+.avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.25rem;
+    background: #206bc4;
+    color: #fff;
+    font-weight: 600;
+}
+
+// Status dots
+.status-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    display: inline-block;
+
+    &.status-dot-animated {
+        animation: pulse 2s ease-in-out infinite;
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+// Navigation
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.nav-link {
+    font-weight: 500;
+
+    &.active {
+        color: #206bc4 !important;
+    }
+}
+
+// Alerts
+.alert {
+    border: 0;
+    border-left: 3px solid;
+
+    &.alert-success {
+        border-left-color: #2fb344;
+    }
+
+    &.alert-danger {
+        border-left-color: #d63939;
+    }
+
+    &.alert-warning {
+        border-left-color: #f76707;
+    }
+
+    &.alert-info {
+        border-left-color: #4299e1;
+    }
+}
+
+// Buttons
+.btn {
+    font-weight: 500;
+    transition: all 0.15s ease;
+
+    &:hover {
+        transform: translateY(-1px);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+// Footer
+.footer {
+    margin-top: auto;
+    padding: 1.5rem 0;
+    border-top: 1px solid rgba(101, 109, 119, 0.16);
+}
+
+// Progress bars
+.progress {
+    height: 0.5rem;
+    border-radius: 0.25rem;
+}
+
+// Custom utilities
+.subheader {
+    font-size: 0.625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #656d77;
+}

@@ -1,0 +1,26 @@
+{
+    "$schema": "https://json.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite"
+    },
+    "devDependencies": {
+        "@coreui/coreui": "^5.2.0",
+        "@popperjs/core": "^2.11.6",
+        "@tabler/core": "^1.0.0-beta20",
+        "@vitejs/plugin-vue": "^6.0.1",
+        "axios": "^1.11.0",
+        "bootstrap": "^5.2.3",
+        "interactjs": "^1.10.26",
+        "laravel-vite-plugin": "^2.0.0",
+        "sass": "^1.56.1",
+        "vite": "^7.0.7",
+        "vue": "^3.2.37"
+    },
+    "dependencies": {
+        "pdfjs-dist": "^5.4.394",
+        "vue-pdf-embed": "^2.1.3"
+    }
+}

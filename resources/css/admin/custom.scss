@@ -1,0 +1,83 @@
+// Custom Admin Styles
+
+// Sidebar customization
+.sidebar {
+    box-shadow: 0 0 2rem 0 rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-brand {
+    padding: 1.5rem 1rem;
+}
+
+// Card customization
+.card {
+    box-shadow: 0 0 0.875rem 0 rgba(33, 37, 41, 0.05);
+    border: 0;
+    margin-bottom: 1.5rem;
+}
+
+// Header customization
+.header {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+// Avatar customization
+.avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.25rem;
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-sm {
+    width: 2rem;
+    height: 2rem;
+}
+
+.avatar-md {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+// Table styling
+.table {
+    >thead {
+        >tr {
+            >th {
+                border-bottom-width: 1px;
+                font-weight: 600;
+                text-transform: uppercase;
+                font-size: 0.75rem;
+                letter-spacing: 0.5px;
+            }
+        }
+    }
+}
+
+// Custom colors for charts
+.bg-primary {
+    background-color: #321fdb !important;
+}
+
+.bg-info {
+    background-color: #39f !important;
+}
+
+.bg-warning {
+    background-color: #f9b115 !important;
+}
+
+.bg-danger {
+    background-color: #e55353 !important;
+}
+
+// Footer
+.footer {
+    padding: 1rem 0;
+    font-size: 0.875rem;
+}
