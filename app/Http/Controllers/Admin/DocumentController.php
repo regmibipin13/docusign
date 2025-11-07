@@ -43,7 +43,12 @@ class DocumentController extends Controller
      */
     public function show(Document $document)
     {
-        $document->load(['user', 'signedDocuments.signature']);
+        $document->load([
+            'user',
+            'signedDocuments.signature',
+            'shares.sharedWith',
+            'signedDocuments.shares.sharedWith'
+        ]);
         return view('admin.documents.show', compact('document'));
     }
 

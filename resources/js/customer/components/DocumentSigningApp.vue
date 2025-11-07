@@ -238,8 +238,12 @@ export default {
                 const blob = await response.blob();
                 this.pdfSource = URL.createObjectURL(blob);
 
-                // Use pdf.js just to get page count
-                pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+                // Configure PDF.js worker - Use local worker from node_modules
+                // Vite will handle bundling the worker file
+                pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+                    'pdfjs-dist/build/pdf.worker.min.mjs',
+                    import.meta.url
+                ).toString();
 
                 const loadingTask = pdfjsLib.getDocument(this.pdfSource);
                 const pdfDoc = await loadingTask.promise;

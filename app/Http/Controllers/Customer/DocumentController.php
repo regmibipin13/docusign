@@ -71,7 +71,13 @@ class DocumentController extends Controller
         }
 
         // Load relationships
-        $document->load(['signedVersions', 'signedDocuments.signature', 'originalDocument']);
+        $document->load([
+            'signedVersions',
+            'signedDocuments.signature',
+            'originalDocument',
+            'shares.sharedWith',
+            'signedDocuments.shares.sharedWith'
+        ]);
 
         return view('customer.documents.show', compact('document'));
     }

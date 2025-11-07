@@ -5,7 +5,7 @@
 @section('page-title', 'Dashboard')
 
 @section('content')
-    <div class="container-xl">
+    <div class="container">
         <!-- Statistics Cards -->
         <div class="row row-deck row-cards mb-3">
             <div class="col-sm-6 col-lg-3">
@@ -257,6 +257,79 @@
                                         </div>
                                     </div>
                                 @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <!-- Shared With Me -->
+        @if ($sharedWithMe->count() > 0)
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h3 class="card-title mb-0">
+                                <i class='bx bx-share-alt'></i> Shared With Me
+                            </h3>
+                            <a href="{{ route('customer.shared-with-me.index') }}" class="btn btn-sm btn-primary">
+                                View All
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-vcenter">
+                                    <thead>
+                                        <tr>
+                                            <th>Document</th>
+                                            <th>Shared By</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($sharedWithMe as $share)
+                                            <tr>
+                                                <td>
+                                                    @if ($share->signed_document_id)
+                                                        <div>
+                                                            <div class="fw-semibold">{{ $share->signedDocument->label }}
+                                                            </div>
+                                                            <small class="text-muted">Signed Document</small>
+                                                        </div>
+                                                    @else
+                                                        <div>
+                                                            <div class="fw-semibold">{{ $share->document->name }}</div>
+                                                            <small class="text-muted">Original Document</small>
+                                                        </div>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <div class="fw-semibold">{{ $share->sharedBy->name }}</div>
+                                                    <small class="text-muted">{{ $share->sharedBy->email }}</small>
+                                                </td>
+                                                <td>
+                                                    <div>{{ $share->created_at->format('M d, Y') }}</div>
+                                                    <small
+                                                        class="text-muted">{{ $share->created_at->diffForHumans() }}</small>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a href="{{ route('customer.shared-with-me.show', $share) }}"
+                                                            class="btn btn-primary">
+                                                            <i class='bx bx-show'></i> View
+                                                        </a>
+                                                        <a href="{{ route('customer.shared-with-me.download', $share) }}"
+                                                            class="btn btn-success">
+                                                            <i class='bx bx-download'></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

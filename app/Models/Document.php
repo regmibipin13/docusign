@@ -53,6 +53,14 @@ class Document extends Model implements HasMedia
     }
 
     /**
+     * Get all shares of this document.
+     */
+    public function shares()
+    {
+        return $this->hasMany(DocumentShare::class);
+    }
+
+    /**
      * Check if document has been signed (has any signed documents).
      */
     public function isSigned(): bool

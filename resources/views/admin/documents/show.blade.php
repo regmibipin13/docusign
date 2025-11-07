@@ -175,6 +175,131 @@
                     </div>
                 @endif
 
+                {{-- Document Shares Section --}}
+                @php
+                    $allShares = $document->shares->merge(
+                        $document->signedDocuments->flatMap(function ($signedDoc) {
+                            return $signedDoc->shares;
+                        }),
+                    );
+                @endphp
+
+                @if ($allShares->count() > 0)
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class='bx bx-share-alt'></i> Active Shares
+                                ({{ $allShares->count() }})
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-vcenter">
+                                    <thead>
+                                        <tr>
+                                            <th>Document</th>
+                                            <th>Share Type</th>
+                                            <th>Recipient</th>
+                                            <th>Status</th>
+                                            <th>Access Count</th>
+                                            <th>Share Link</th>
+                                            <th>Created</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($allShares as $share)
+                                            <tr>
+                                                <td>
+                                                    @if ($share->signed_document_id)
+                                                        <div>
+                                                            <div class="fw-semibold">{{ $share->signedDocument->label }}
+                                                            </div>
+                                                            <small class="text-muted">Signed Document</small>
+                                                        </div>
+                                                    @else
+                                                        <div>
+                                                            <div class="fw-semibold">{{ $document->name }}</div>
+                                                            <small class="text-muted">Original Document</small>
+                                                        </div>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if ($share->share_type === 'public_link')
+                                                        <span class="badge bg-info text-white">
+                                                            <i class='bx bx-link'></i> Public Link
+                                                        </span>
+                                                    @elseif($share->share_type === 'email')
+                                                        <span class="badge bg-success text-white">
+                                                            <i class='bx bx-envelope'></i> Email
+                                                        </span>
+                                                    @else
+                                                        <span class="badge bg-primary text-white">
+                                                            <i class='bx bx-user'></i> Registered User
+                                                        </span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if ($share->share_type === 'email')
+                                                        <div>{{ $share->recipient_email }}</div>
+                                                    @elseif($share->share_type === 'registered_user' && $share->sharedWith)
+                                                        <div>
+                                                            <div class="fw-semibold">{{ $share->sharedWith->name }}</div>
+                                                            <small
+                                                                class="text-muted">{{ $share->sharedWith->email }}</small>
+                                                        </div>
+                                                    @else
+                                                        <span class="text-muted">Anyone with link</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if (!$share->is_active)
+                                                        <span class="badge bg-secondary text-white">Inactive</span>
+                                                    @elseif($share->isExpired())
+                                                        <span class="badge bg-danger text-white">Expired</span>
+                                                    @else
+                                                        <span class="badge bg-success text-white">Active</span>
+                                                    @endif
+                                                    @if ($share->expires_at)
+                                                        <div class="small text-muted mt-1">
+                                                            Expires: {{ $share->expires_at->format('M d, Y') }}
+                                                        </div>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-cyan text-white">{{ $share->access_count }}
+                                                        views</span>
+                                                    @if ($share->last_accessed_at)
+                                                        <div class="small text-muted mt-1">
+                                                            Last: {{ $share->last_accessed_at->diffForHumans() }}
+                                                        </div>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <div class="input-group input-group-sm" style="max-width: 300px;">
+                                                        <input type="text" class="form-control form-control-sm"
+                                                            value="{{ $share->getShareUrl() }}" readonly
+                                                            id="share-link-{{ $share->id }}">
+                                                        <button class="btn btn-info text-white copy-link-btn"
+                                                            data-url="{{ $share->getShareUrl() }}"
+                                                            data-id="{{ $share->id }}">
+                                                            <i class='bx bx-copy'></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div>{{ $share->created_at->format('M d, Y') }}</div>
+                                                    <small
+                                                        class="text-muted">{{ $share->created_at->diffForHumans() }}</small>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <!-- PDF Viewer -->
                 <div class="card">
                     <div class="card-header">
@@ -191,4 +316,59 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        <script>
+            // Helper function to copy text with fallback
+            function copyToClipboard(text) {
+                // Try modern clipboard API first
+                if (navigator.clipboard && window.isSecureContext) {
+                    return navigator.clipboard.writeText(text);
+                } else {
+                    // Fallback for older browsers or non-secure contexts
+                    return new Promise((resolve, reject) => {
+                        const textArea = document.createElement('textarea');
+                        textArea.value = text;
+                        textArea.style.position = 'fixed';
+                        textArea.style.left = '-999999px';
+                        textArea.style.top = '-999999px';
+                        document.body.appendChild(textArea);
+                        textArea.focus();
+                        textArea.select();
+                        try {
+                            document.execCommand('copy');
+                            textArea.remove();
+                            resolve();
+                        } catch (err) {
+                            textArea.remove();
+                            reject(err);
+                        }
+                    });
+                }
+            }
+
+            // Copy share link functionality
+            document.querySelectorAll('.copy-link-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const url = this.getAttribute('data-url');
+                    const id = this.getAttribute('data-id');
+
+                    copyToClipboard(url).then(() => {
+                        const originalHtml = this.innerHTML;
+                        this.innerHTML = '<i class="bx bx-check"></i>';
+                        this.classList.remove('btn-info');
+                        this.classList.add('btn-success');
+
+                        setTimeout(() => {
+                            this.innerHTML = originalHtml;
+                            this.classList.remove('btn-success');
+                            this.classList.add('btn-info');
+                        }, 2000);
+                    }).catch(err => {
+                        alert('Failed to copy link: ' + err.message);
+                    });
+                });
+            });
+        </script>
+    @endpush
 @endsection

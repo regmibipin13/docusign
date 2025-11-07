@@ -4,42 +4,45 @@ import { createApp } from 'vue';
 
 // Import Vue Components
 import DocumentSigningApp from './components/DocumentSigningApp.vue';
+import ShareEmailManager from '../components/ShareEmailManager.vue';
+import ShareUserSelector from '../components/ShareUserSelector.vue';
+import ShareLinkCopy from '../components/ShareLinkCopy.vue';
+import SignatureForm from '../components/SignatureForm.vue';
+import SignatureFormWrapper from '../components/SignatureFormWrapper.vue';
+import ShareDocumentForm from '../components/ShareDocumentForm.vue';
 
 // Make Bootstrap available globally
 window.bootstrap = bootstrap;
 
-// Initialize Vue apps when DOM is ready
-document.addEventListener('DOMContentLoaded', function () {
-    // Initialize Document Signing App if element exists
-    const signAppElement = document.getElementById('signApp');
-    if (signAppElement) {
-        const app = createApp(DocumentSigningApp, {
-            documentName: signAppElement.dataset.documentName,
-            documentId: parseInt(signAppElement.dataset.documentId),
-            documentUrl: signAppElement.dataset.documentUrl,
-            signaturesUrl: signAppElement.dataset.signaturesUrl,
-            createSignatureUrl: signAppElement.dataset.createSignatureUrl,
-            cancelUrl: signAppElement.dataset.cancelUrl
-        });
-        app.mount('#signApp');
-    }
+// Create and mount main Vue app - SINGLE MOUNT
+const app = createApp({});
 
+// Register all global components
+app.component('document-signing-app', DocumentSigningApp);
+app.component('share-email-manager', ShareEmailManager);
+app.component('share-user-selector', ShareUserSelector);
+app.component('share-link-copy', ShareLinkCopy);
+app.component('signature-form', SignatureForm);
+app.component('signature-form-wrapper', SignatureFormWrapper);
+app.component('share-document-form', ShareDocumentForm);
+
+// Mount Vue app once
+app.mount('#app');
+
+// Initialize Bootstrap components
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize all tooltips
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
 
     // Initialize all popovers
-    const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-    popoverTriggerList.map(function (popoverTriggerEl) {
-        return new bootstrap.Popover(popoverTriggerEl);
-    });
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+    popoverTriggerList.forEach(el => new bootstrap.Popover(el));
 
     // Auto-dismiss alerts after 5 seconds
     const alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
-    alerts.forEach(function (alert) {
-        setTimeout(function () {
+    alerts.forEach(alert => {
+        setTimeout(() => {
             const bsAlert = new bootstrap.Alert(alert);
             bsAlert.close();
         }, 5000);
@@ -50,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const themeToggleLight = document.querySelector('.hide-theme-light');
 
     if (themeToggleDark) {
-        themeToggleDark.addEventListener('click', function (e) {
+        themeToggleDark.addEventListener('click', (e) => {
             e.preventDefault();
             document.body.classList.add('theme-dark');
             localStorage.setItem('theme', 'dark');
@@ -58,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (themeToggleLight) {
-        themeToggleLight.addEventListener('click', function (e) {
+        themeToggleLight.addEventListener('click', (e) => {
             e.preventDefault();
             document.body.classList.remove('theme-dark');
             localStorage.setItem('theme', 'light');
@@ -70,8 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (savedTheme === 'dark') {
         document.body.classList.add('theme-dark');
     }
-
-    console.log('Customer dashboard initialized');
 });
 
 // Export for use in other modules

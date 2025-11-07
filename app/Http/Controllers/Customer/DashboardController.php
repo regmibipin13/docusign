@@ -22,6 +22,14 @@ class DashboardController extends Controller
             ->count();
         $unsignedDocuments = $totalDocuments - $signedDocuments;
 
+        // Get documents shared with this user
+        $sharedWithMe = \App\Models\DocumentShare::where('shared_with_user_id', $user->id)
+            ->where('is_active', true)
+            ->with(['document', 'signedDocument', 'sharedBy'])
+            ->latest()
+            ->take(5)
+            ->get();
+
         // Get recent documents
         $recentDocuments = $user->documents()
             ->with('signedDocuments')
@@ -42,7 +50,8 @@ class DashboardController extends Controller
             'signedDocuments',
             'unsignedDocuments',
             'recentDocuments',
-            'recentSignatures'
+            'recentSignatures',
+            'sharedWithMe'
         ));
     }
 }

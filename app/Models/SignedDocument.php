@@ -39,6 +39,14 @@ class SignedDocument extends Model implements HasMedia
     }
 
     /**
+     * Get all shares of this signed document
+     */
+    public function shares()
+    {
+        return $this->hasMany(DocumentShare::class);
+    }
+
+    /**
      * Register media collections
      */
     public function registerMediaCollections(): void

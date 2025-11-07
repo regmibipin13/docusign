@@ -5,10 +5,9 @@
 @section('page-title', 'Sign Document: ' . $document->name)
 
 @section('content')
-    <div id="signApp" data-document-name="{{ $document->name }}" data-document-id="{{ $document->id }}"
-        data-document-url="{{ route('customer.documents.view', $document) }}"
-        data-signatures-url="{{ route('customer.signing.signatures') }}"
-        data-create-signature-url="{{ route('customer.signatures.create') }}"
-        data-cancel-url="{{ route('customer.documents.show', $document) }}">
-    </div>
+    <document-signing-app document-name="{{ $document->name }}" :document-id="{{ $document->id }}"
+        document-url="{{ route('customer.documents.view', $document) }}"
+        signatures-url="{{ route('customer.signing.signatures') }}"
+        create-signature-url="{{ route('customer.signatures.create') }}"
+        cancel-url="{{ route('customer.documents.show', $document) }}"></document-signing-app>
 @endsection

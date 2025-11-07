@@ -20,6 +20,10 @@
                             <a href="{{ route('customer.documents.edit', $document) }}" class="btn btn-primary">
                                 <i class='bx bx-edit'></i> Edit
                             </a>
+                            <a href="{{ route('customer.documents.shares.create', $document) }}"
+                                class="btn btn-info text-white">
+                                <i class='bx bx-share'></i> Share
+                            </a>
                             <a href="{{ route('customer.documents.download', $document) }}" class="btn btn-success">
                                 <i class='bx bx-download'></i> Download
                             </a>
@@ -29,6 +33,35 @@
                         </div>
                     </div>
                     <div class="card-body">
+                        @if (session('share_link'))
+                            <div class="alert alert-success alert-dismissible mb-4">
+                                <div class="d-flex">
+                                    <div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24"
+                                            height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                            fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+                                            <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h4 class="alert-heading">Share Link Generated!</h4>
+                                        <p class="mb-2">Your document has been shared successfully. Copy the link below:
+                                        </p>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="new-share-link"
+                                                value="{{ session('share_link') }}" readonly>
+                                            <button class="btn btn-primary" onclick="copyNewShareLink()">
+                                                <i class='bx bx-copy'></i> Copy Link
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+                            </div>
+                        @endif
+
                         @if ($document->signedDocuments->count() > 0)
                             <div class="alert alert-success mb-4">
                                 <div class="d-flex align-items-center">
@@ -111,6 +144,141 @@
                             </div>
                         @endif
 
+                        {{-- Document Shares Section --}}
+                        @php
+                            $allShares = $document->shares->merge(
+                                $document->signedDocuments->flatMap(function ($signedDoc) {
+                                    return $signedDoc->shares;
+                                }),
+                            );
+                        @endphp
+
+                        @if ($allShares->count() > 0)
+                            <div class="card mb-4">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h4 class="card-title mb-0">
+                                        <i class='bx bx-share-alt'></i> Active Shares
+                                        ({{ $allShares->count() }})
+                                    </h4>
+                                    <a href="{{ route('customer.documents.shares.create', $document) }}"
+                                        class="btn btn-sm btn-primary">
+                                        <i class='bx bx-plus'></i> New Share
+                                    </a>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-vcenter">
+                                            <thead>
+                                                <tr>
+                                                    <th>Document</th>
+                                                    <th>Type</th>
+                                                    <th>Recipient</th>
+                                                    <th>Status</th>
+                                                    <th>Views</th>
+                                                    <th>Created</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($allShares as $share)
+                                                    <tr>
+                                                        <td>
+                                                            @if ($share->signed_document_id)
+                                                                <div>
+                                                                    <div class="fw-semibold">
+                                                                        {{ $share->signedDocument->label }}</div>
+                                                                    <small class="text-muted">Signed Document</small>
+                                                                </div>
+                                                            @else
+                                                                <div>
+                                                                    <div class="fw-semibold">{{ $document->name }}</div>
+                                                                    <small class="text-muted">Original Document</small>
+                                                                </div>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if ($share->share_type === 'public_link')
+                                                                <span class="badge bg-info text-white">
+                                                                    <i class='bx bx-link'></i> Public Link
+                                                                </span>
+                                                            @elseif($share->share_type === 'email')
+                                                                <span class="badge bg-success text-white">
+                                                                    <i class='bx bx-envelope'></i> Email
+                                                                </span>
+                                                            @else
+                                                                <span class="badge bg-primary text-white">
+                                                                    <i class='bx bx-user'></i> Registered User
+                                                                </span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if ($share->share_type === 'email')
+                                                                <div>{{ $share->recipient_email }}</div>
+                                                            @elseif($share->share_type === 'registered_user' && $share->sharedWith)
+                                                                <div>
+                                                                    <div class="fw-semibold">{{ $share->sharedWith->name }}
+                                                                    </div>
+                                                                    <small
+                                                                        class="text-muted">{{ $share->sharedWith->email }}</small>
+                                                                </div>
+                                                            @else
+                                                                <span class="text-muted">Anyone with link</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if (!$share->is_active)
+                                                                <span class="badge bg-secondary text-white">Inactive</span>
+                                                            @elseif($share->isExpired())
+                                                                <span class="badge bg-danger text-white">Expired</span>
+                                                            @else
+                                                                <span class="badge bg-success text-white">Active</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <span
+                                                                class="badge bg-cyan text-white">{{ $share->access_count }}</span>
+                                                        </td>
+                                                        <td>
+                                                            <div>{{ $share->created_at->format('M d, Y') }}</div>
+                                                            <small
+                                                                class="text-muted">{{ $share->created_at->diffForHumans() }}</small>
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group">
+                                                                <button
+                                                                    class="btn btn-sm btn-info text-white copy-link-btn"
+                                                                    data-url="{{ $share->getShareUrl() }}"
+                                                                    title="Copy share link">
+                                                                    <i class='bx bx-copy'></i>
+                                                                </button>
+                                                                <a href="{{ $share->getShareUrl() }}"
+                                                                    class="btn btn-sm btn-success" target="_blank"
+                                                                    title="Open link">
+                                                                    <i class='bx bx-link-external'></i>
+                                                                </a>
+                                                                <form
+                                                                    action="{{ route('customer.shares.destroy', $share) }}"
+                                                                    method="POST"
+                                                                    onsubmit="return confirm('Revoke this share? The link will no longer work.');"
+                                                                    class="d-inline">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="btn btn-sm btn-danger"
+                                                                        title="Revoke">
+                                                                        <i class='bx bx-trash'></i>
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
@@ -163,7 +331,7 @@
                 <!-- PDF Viewer -->
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Document Preview</h3>
+                        <h3 class="card-title">Original Document Preview</h3>
                     </div>
                     <div class="card-body p-0">
                         <div class="pdf-viewer-container" style="height: 800px; overflow: hidden;">
@@ -176,4 +344,74 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        <script>
+            // Helper function to copy text with fallback
+            function copyToClipboard(text) {
+                // Try modern clipboard API first
+                if (navigator.clipboard && window.isSecureContext) {
+                    return navigator.clipboard.writeText(text);
+                } else {
+                    // Fallback for older browsers or non-secure contexts
+                    return new Promise((resolve, reject) => {
+                        const textArea = document.createElement('textarea');
+                        textArea.value = text;
+                        textArea.style.position = 'fixed';
+                        textArea.style.left = '-999999px';
+                        textArea.style.top = '-999999px';
+                        document.body.appendChild(textArea);
+                        textArea.focus();
+                        textArea.select();
+                        try {
+                            document.execCommand('copy');
+                            textArea.remove();
+                            resolve();
+                        } catch (err) {
+                            textArea.remove();
+                            reject(err);
+                        }
+                    });
+                }
+            }
+
+            // Copy new share link functionality
+            function copyNewShareLink() {
+                const input = document.getElementById('new-share-link');
+                const text = input.value;
+
+                copyToClipboard(text).then(() => {
+                    const btn = event.target.closest('button');
+                    const originalHtml = btn.innerHTML;
+                    btn.innerHTML = '<i class="bx bx-check"></i> Copied!';
+                    setTimeout(() => {
+                        btn.innerHTML = originalHtml;
+                    }, 2000);
+                }).catch(err => {
+                    alert('Failed to copy link: ' + err.message);
+                });
+            }
+
+            // Copy share link functionality
+            document.querySelectorAll('.copy-link-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const url = this.getAttribute('data-url');
+
+                    copyToClipboard(url).then(() => {
+                        const originalHtml = this.innerHTML;
+                        this.innerHTML = '<i class="bx bx-check"></i>';
+                        this.classList.remove('btn-info');
+                        this.classList.add('btn-success');
+                        setTimeout(() => {
+                            this.innerHTML = originalHtml;
+                            this.classList.remove('btn-success');
+                            this.classList.add('btn-info');
+                        }, 2000);
+                    }).catch(err => {
+                        alert('Failed to copy link: ' + err.message);
+                    });
+                });
+            });
+        </script>
+    @endpush
 @endsection

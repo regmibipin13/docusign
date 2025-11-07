@@ -80,6 +80,17 @@ Route::prefix('customer')->name('customer.')->middleware(['auth', 'customer'])->
     Route::get('/signing/signatures', [App\Http\Controllers\Customer\DocumentSigningController::class, 'getSignatures'])->name('signing.signatures');
     Route::post('/documents/{document}/sign', [App\Http\Controllers\Customer\DocumentSigningController::class, 'store'])->name('documents.sign.store');
 
+    // Document Sharing (customer)
+    Route::get('/documents/{document}/shares', [App\Http\Controllers\Customer\ShareController::class, 'index'])->name('documents.shares.index');
+    Route::get('/documents/{document}/shares/create', [App\Http\Controllers\Customer\ShareController::class, 'create'])->name('documents.shares.create');
+    Route::post('/documents/{document}/shares', [App\Http\Controllers\Customer\ShareController::class, 'store'])->name('documents.shares.store');
+    Route::delete('/shares/{share}', [App\Http\Controllers\Customer\ShareController::class, 'destroy'])->name('shares.destroy');
+
+    // Shared With Me
+    Route::get('/shared-with-me', [App\Http\Controllers\Customer\SharedWithMeController::class, 'index'])->name('shared-with-me.index');
+    Route::get('/shared-with-me/{share}', [App\Http\Controllers\Customer\SharedWithMeController::class, 'show'])->name('shared-with-me.show');
+    Route::get('/shared-with-me/{share}/download', [App\Http\Controllers\Customer\SharedWithMeController::class, 'download'])->name('shared-with-me.download');
+
     // Signed Document Management
     Route::delete('/signed-documents/{signedDocument}', [App\Http\Controllers\Customer\SignedDocumentController::class, 'destroy'])->name('signed-documents.destroy');
 
@@ -93,3 +104,7 @@ Route::prefix('customer')->name('customer.')->middleware(['auth', 'customer'])->
 
 // Home route - redirects to role-based dashboard
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+// Public share routes (no auth)
+Route::get('/shared/{token}', [App\Http\Controllers\PublicDocumentController::class, 'show'])->name('public.document.show');
+Route::get('/shared/{token}/download', [App\Http\Controllers\PublicDocumentController::class, 'download'])->name('public.document.download');
