@@ -43,7 +43,7 @@ class SignatureController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'signature_type' => ['required', 'in:image,draw'],
             'signature_image' => ['required_if:signature_type,image', 'image', 'mimes:png,jpg,jpeg,gif', 'max:2048'],
-            'signature_data' => ['required_if:signature_type,draw', 'string'],
+            'signature_data' => ['required_if:signature_type,draw', 'string', 'min:10'],
             'is_active' => ['boolean'],
         ]);
 
@@ -124,7 +124,7 @@ class SignatureController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'signature_type' => ['required', 'in:image,draw'],
             'signature_image' => ['nullable', 'image', 'mimes:png,jpg,jpeg,gif', 'max:2048'],
-            'signature_data' => ['nullable', 'string'],
+            'signature_data' => ['nullable', 'string', 'min:10'],
             'is_active' => ['boolean'],
         ]);
 

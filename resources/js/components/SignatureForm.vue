@@ -112,7 +112,7 @@
                     </button>
                 </div>
             </div>
-            <input type="hidden" name="signature_data" :value="signatureData">
+            <input type="hidden" name="signature_data" v-if="signatureType === 'draw'" :value="signatureData">
         </div>
 
         <div class="mb-3">
