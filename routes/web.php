@@ -47,6 +47,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('signatures', App\Http\Controllers\Admin\SignatureController::class)->only(['index', 'show', 'destroy']);
     Route::post('/signatures/{signature}/toggle-status', [App\Http\Controllers\Admin\SignatureController::class, 'toggleStatus'])->name('signatures.toggle-status');
 
+    // Receiver Group Management
+    Route::resource('receiver-groups', App\Http\Controllers\Admin\ReceiverGroupController::class);
+
     // Add more admin routes here
     // Route::resource('settings', SettingController::class);
 });
@@ -97,6 +100,9 @@ Route::prefix('customer')->name('customer.')->middleware(['auth', 'customer'])->
     // Signature Management
     Route::resource('signatures', App\Http\Controllers\Customer\SignatureController::class);
     Route::post('/signatures/{signature}/toggle-status', [App\Http\Controllers\Customer\SignatureController::class, 'toggleStatus'])->name('signatures.toggle-status');
+
+    // Receiver Group Management
+    Route::resource('receiver-groups', App\Http\Controllers\Customer\ReceiverGroupController::class);
 
     // Add more customer routes here
     // Route::resource('profile', ProfileController::class);

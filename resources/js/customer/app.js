@@ -10,6 +10,7 @@ import ShareLinkCopy from '../components/ShareLinkCopy.vue';
 import SignatureForm from '../components/SignatureForm.vue';
 import SignatureFormWrapper from '../components/SignatureFormWrapper.vue';
 import ShareDocumentForm from '../components/ShareDocumentForm.vue';
+import ReceiverGroupForm from '../components/ReceiverGroupForm.vue';
 
 // Make Bootstrap available globally
 window.bootstrap = bootstrap;
@@ -25,6 +26,7 @@ app.component('share-link-copy', ShareLinkCopy);
 app.component('signature-form', SignatureForm);
 app.component('signature-form-wrapper', SignatureFormWrapper);
 app.component('share-document-form', ShareDocumentForm);
+app.component('receiver-group-form', ReceiverGroupForm);
 
 // Mount Vue app once
 app.mount('#app');

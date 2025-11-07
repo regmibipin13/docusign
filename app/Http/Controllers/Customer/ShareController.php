@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\DocumentShare;
 use App\Models\User;
+use App\Models\ReceiverGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\DocumentSharedMail;
@@ -33,7 +34,22 @@ class ShareController extends Controller
 
         $users = User::where('role', 'customer')->where('id', '!=', auth()->id())->orderBy('name')->get();
 
-        return view('customer.documents.shares.create', compact('document', 'users'));
+        // Get user's receiver groups with member counts
+        $receiverGroups = ReceiverGroup::forUser(auth()->id())
+            ->with(['emailMembers', 'registeredUserMembers'])
+            ->get()
+            ->map(function ($group) {
+                return [
+                    'id' => $group->id,
+                    'name' => $group->name,
+                    'description' => $group->description,
+                    'member_count' => $group->member_count,
+                    'email_count' => $group->emailMembers->count(),
+                    'user_count' => $group->registeredUserMembers->count(),
+                ];
+            });
+
+        return view('customer.documents.shares.create', compact('document', 'users', 'receiverGroups'));
     }
 
     public function store(Request $request, Document $document)
@@ -43,7 +59,8 @@ class ShareController extends Controller
         }
 
         $data = $request->validate([
-            'share_type' => 'required|in:public_link,email,registered_user',
+            'share_type' => 'required|in:public_link,email,registered_user,receiver_group',
+            'receiver_group_id' => 'nullable|exists:receiver_groups,id',
             'recipient_emails' => 'nullable|array',
             'recipient_emails.*' => 'nullable|email',
             'shared_with_user_ids' => 'nullable|array',
@@ -68,6 +85,70 @@ class ShareController extends Controller
             ]);
             $shares[] = $share;
             $sharesCreated++;
+        }
+
+        // For receiver group, expand members and create shares
+        if ($data['share_type'] === 'receiver_group' && !empty($data['receiver_group_id'])) {
+            $group = ReceiverGroup::with(['emailMembers', 'registeredUserMembers'])->findOrFail($data['receiver_group_id']);
+
+            // Verify ownership
+            if ($group->user_id !== auth()->id()) {
+                return redirect()->route('customer.documents.shares.create', $document)
+                    ->with('error', 'You do not have permission to use this group.');
+            }
+
+            // Create shares for email members
+            foreach ($group->emailMembers as $member) {
+                $share = DocumentShare::create([
+                    'document_id' => $document->id,
+                    'shared_by_user_id' => auth()->id(),
+                    'share_type' => 'email',
+                    'recipient_email' => $member->recipient_value,
+                    'expires_at' => $data['expires_at'] ?? null,
+                    'metadata' => [
+                        'message' => $data['message'] ?? null,
+                        'shared_via_group' => $group->name,
+                    ],
+                ]);
+                $shares[] = $share;
+                $sharesCreated++;
+
+                // Send email
+                try {
+                    Mail::to($member->recipient_value)->send(new DocumentSharedMail($share));
+                    $emailsSent++;
+                } catch (\Exception $e) {
+                    $errors[] = "Failed to send email to {$member->recipient_value}";
+                }
+            }
+
+            // Create shares for registered user members
+            foreach ($group->registeredUserMembers as $member) {
+                $share = DocumentShare::create([
+                    'document_id' => $document->id,
+                    'shared_by_user_id' => auth()->id(),
+                    'share_type' => 'registered_user',
+                    'shared_with_user_id' => $member->recipient_value,
+                    'expires_at' => $data['expires_at'] ?? null,
+                    'metadata' => [
+                        'message' => $data['message'] ?? null,
+                        'shared_via_group' => $group->name,
+                    ],
+                ]);
+                $shares[] = $share;
+                $sharesCreated++;
+
+                // Send notification email
+                $user = User::find($member->recipient_value);
+                if ($user) {
+                    try {
+                        Mail::to($user->email)->send(new DocumentSharedMail($share));
+                        $emailsSent++;
+                    } catch (\Exception $e) {
+                        $errors[] = "Failed to send email to {$user->name}";
+                    }
+                }
+            }
         }
 
         // For email shares, create one share per email

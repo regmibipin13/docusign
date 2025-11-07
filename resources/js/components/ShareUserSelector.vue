@@ -72,18 +72,37 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 const props = defineProps({
     users: {
         type: Array,
         required: true
+    },
+    initialSelectedIds: {
+        type: Array,
+        default: () => []
     }
 });
+
+const emit = defineEmits(['users-updated']);
 
 const searchTerm = ref('');
 const selectedUsers = ref([]);
 const showResults = ref(false);
+
+// Initialize with pre-selected users
+if (props.initialSelectedIds.length > 0) {
+    selectedUsers.value = props.users.filter(user =>
+        props.initialSelectedIds.includes(user.id)
+    );
+}
+
+// Watch for changes and emit user IDs to parent
+watch(selectedUsers, (newUsers) => {
+    const userIds = newUsers.map(u => u.id);
+    emit('users-updated', userIds);
+}, { deep: true });
 
 const filteredUsers = computed(() => {
     if (searchTerm.value.length < 2) {
