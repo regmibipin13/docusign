@@ -4,10 +4,15 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
+use App\Http\Controllers\Frontend\HomeController;
 
-Route::get('/', function () {
-    return view('welcome');
+// Frontend Routes
+Route::prefix('frontend')->name('frontend.')->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
 });
+
+// Root redirects to frontend home
+Route::get('/', [HomeController::class, 'index']);
 
 // Authentication Routes - Laravel UI
 Auth::routes();

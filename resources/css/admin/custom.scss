@@ -1,5 +1,111 @@
 // Custom Admin Styles
 
+// Brand Colors Override
+:root {
+    --bs-primary: #0f7cc1;
+    --bs-primary-rgb: 15, 124, 193;
+    --bs-secondary: #eb2227;
+    --bs-secondary-rgb: 235, 34, 39;
+    --bs-danger: #eb2227;
+    --bs-danger-rgb: 235, 34, 39;
+}
+
+// Bootstrap Component Overrides
+.btn-primary {
+    --bs-btn-bg: #0f7cc1;
+    --bs-btn-border-color: #0f7cc1;
+    --bs-btn-hover-bg: #0d6aa8;
+    --bs-btn-hover-border-color: #0d6aa8;
+    --bs-btn-active-bg: #0b5d93;
+    --bs-btn-active-border-color: #0b5d93;
+}
+
+.btn-secondary,
+.btn-danger {
+    --bs-btn-bg: #eb2227;
+    --bs-btn-border-color: #eb2227;
+    --bs-btn-hover-bg: #d11e22;
+    --bs-btn-hover-border-color: #d11e22;
+    --bs-btn-active-bg: #b71a1e;
+    --bs-btn-active-border-color: #b71a1e;
+}
+
+.text-primary {
+    color: #0f7cc1 !important;
+}
+
+.text-secondary,
+.text-danger {
+    color: #eb2227 !important;
+}
+
+.bg-primary {
+    background-color: #0f7cc1 !important;
+}
+
+.bg-secondary,
+.bg-danger {
+    background-color: #eb2227 !important;
+}
+
+.border-primary {
+    border-color: #0f7cc1 !important;
+}
+
+.border-secondary,
+.border-danger {
+    border-color: #eb2227 !important;
+}
+
+.badge.bg-primary {
+    background-color: #0f7cc1 !important;
+}
+
+.badge.bg-secondary,
+.badge.bg-danger {
+    background-color: #eb2227 !important;
+}
+
+.alert-primary {
+    --bs-alert-bg: rgba(15, 124, 193, 0.1);
+    --bs-alert-border-color: rgba(15, 124, 193, 0.2);
+    --bs-alert-color: #0d6aa8;
+}
+
+.alert-secondary,
+.alert-danger {
+    --bs-alert-bg: rgba(235, 34, 39, 0.1);
+    --bs-alert-border-color: rgba(235, 34, 39, 0.2);
+    --bs-alert-color: #d11e22;
+}
+
+.form-check-input:checked {
+    background-color: #0f7cc1;
+    border-color: #0f7cc1;
+}
+
+.form-control:focus {
+    border-color: #0f7cc1;
+    box-shadow: 0 0 0 0.25rem rgba(15, 124, 193, 0.25);
+}
+
+.nav-pills .nav-link.active {
+    background-color: #0f7cc1;
+}
+
+.pagination .page-link {
+    color: #0f7cc1;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #0f7cc1;
+    border-color: #0f7cc1;
+}
+
+.progress-bar {
+    background-color: #0f7cc1;
+}
+
 // Sidebar customization
 .sidebar {
     box-shadow: 0 0 2rem 0 rgba(0, 0, 0, 0.1);
@@ -60,20 +166,12 @@
 }
 
 // Custom colors for charts
-.bg-primary {
-    background-color: #321fdb !important;
-}
-
 .bg-info {
     background-color: #39f !important;
 }
 
 .bg-warning {
     background-color: #f9b115 !important;
-}
-
-.bg-danger {
-    background-color: #e55353 !important;
 }
 
 // Footer

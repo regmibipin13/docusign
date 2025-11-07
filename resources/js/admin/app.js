@@ -1,8 +1,25 @@
 // Import CoreUI
 import * as coreui from '@coreui/coreui';
+import { createApp } from 'vue';
+
+// Import Vue Components
+import ReceiverGroupForm from '../components/ReceiverGroupForm.vue';
+import ShareEmailManager from '../components/ShareEmailManager.vue';
+import ShareUserSelector from '../components/ShareUserSelector.vue';
 
 // Make CoreUI available globally
 window.coreui = coreui;
+
+// Create and mount Vue app
+const app = createApp({});
+
+// Register components
+app.component('receiver-group-form', ReceiverGroupForm);
+app.component('share-email-manager', ShareEmailManager);
+app.component('share-user-selector', ShareUserSelector);
+
+// Mount Vue app
+app.mount('#app');
 
 // Initialize CoreUI components on page load
 document.addEventListener('DOMContentLoaded', function () {

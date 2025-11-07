@@ -19,12 +19,9 @@
 <body>
     <div class="sidebar sidebar-dark sidebar-fixed" id="sidebar">
         <div class="sidebar-brand d-none d-md-flex">
-            <svg class="sidebar-brand-full" width="118" height="46" alt="CoreUI Logo">
-                <use xlink:href="#logo-full"></use>
-            </svg>
-            <svg class="sidebar-brand-narrow" width="46" height="46" alt="CoreUI Logo">
-                <use xlink:href="#logo-narrow"></use>
-            </svg>
+            <img src="{{ asset('logo.png') }}" alt="{{ config('app.name') }}" height="40" class="sidebar-brand-full">
+            <img src="{{ asset('logo.png') }}" alt="{{ config('app.name') }}" height="40"
+                class="sidebar-brand-narrow">
         </div>
         <ul class="sidebar-nav" data-coreui="navigation" data-simplebar="">
             <li class="nav-item">
